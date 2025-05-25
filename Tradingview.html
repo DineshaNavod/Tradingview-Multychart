@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TradingView Multi-Chart Dashboard Smooth</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="./TradingView-1329545834186664340_128px.png"
+    />
+    <style>
+      body {
+        margin: 0;
+        background-color: #000;
+        font-family: Arial, sans-serif;
+        overflow: hidden;
+      }
+      .dashboard {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 10px;
+        padding: 10px;
+        height: 100vh;
+        transition: all 0.5s ease;
+      }
+      .chart-container {
+        position: relative;
+        border-radius: 10px;
+        overflow: hidden;
+        background-color: #111;
+        box-shadow: 0 0 10px #0f0;
+        transition: box-shadow 0.4s ease-in-out, transform 0.4s ease-in-out,
+          opacity 0.3s ease-in-out;
+        display: flex;
+        flex-direction: column;
+        opacity: 1;
+      }
+      .chart-container.fade-out {
+        opacity: 0;
+      }
+      .fullscreen {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: 9999;
+        padding: 0 !important;
+        gap: 0 !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        transform: scale(1);
+        transition: all 0.4s ease-in-out;
+      }
+      .fullscreen .controls {
+        padding: 15px;
+        font-size: 16px;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+      .fullscreen .fullscreen-btn {
+        top: 15px;
+        right: 15px;
+        font-size: 16px;
+        padding: 6px 10px;
+      }
+      .controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 5px 10px;
+        background-color: #000;
+        color: #0f0;
+        font-size: 14px;
+        user-select: none;
+        flex-shrink: 0;
+        gap: 30px;
+      }
+      .controls select {
+        margin-left: 5px;
+        background: #000;
+        color: #0f0;
+        border: 1px solid #0f0;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+      .tvchart {
+        flex-grow: 1;
+        min-height: 0;
+      }
+      .fullscreen-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: #0f0;
+        color: #000;
+        border: none;
+        border-radius: 4px;
+        padding: 3px 7px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.3s;
+        user-select: none;
+        z-index: 10;
+      }
+      .fullscreen-btn:hover {
+        background: #fff;
+      }
+      body.no-scroll {
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard" id="dashboard">
+      <div class="chart-container" data-symbol="BINANCE:BTCUSDT.P">
+        <div class="controls">
+          <span><b>BTCUSDT.P</b></span>
+          <label>
+            Time:
+            <select class="timeframe">
+              <option value="1">1m</option>
+              <option value="5" selected>5m</option>
+              <option value="15">15m</option>
+              <option value="60">1h</option>
+              <option value="240">4h</option>
+              <option value="D">1d</option>
+            </select>
+          </label>
+        </div>
+        <div class="tvchart"></div>
+        <button class="fullscreen-btn" title="Toggle Fullscreen">⛶</button>
+      </div>
+      <div class="chart-container" data-symbol="CRYPTOCAP:BTC.D">
+        <div class="controls">
+          <span><b>BTC.D</b></span>
+          <label>
+            Time:
+            <select class="timeframe">
+              <option value="1">1m</option>
+              <option value="5" selected>5m</option>
+              <option value="15">15m</option>
+              <option value="60">1h</option>
+              <option value="240">4h</option>
+              <option value="D">1d</option>
+            </select>
+          </label>
+        </div>
+        <div class="tvchart"></div>
+        <button class="fullscreen-btn" title="Toggle Fullscreen">⛶</button>
+      </div>
+      <div class="chart-container" data-symbol="CRYPTOCAP:USDT.D">
+        <div class="controls">
+          <span><b>USDT.D</b></span>
+          <label>
+            Time:
+            <select class="timeframe">
+              <option value="1">1m</option>
+              <option value="5" selected>5m</option>
+              <option value="15">15m</option>
+              <option value="60">1h</option>
+              <option value="240">4h</option>
+              <option value="D">1d</option>
+            </select>
+          </label>
+        </div>
+        <div class="tvchart"></div>
+        <button class="fullscreen-btn" title="Toggle Fullscreen">⛶</button>
+      </div>
+      <div class="chart-container" data-symbol="CRYPTOCAP:TOTAL">
+        <div class="controls">
+          <span><b>TOTAL</b></span>
+          <label>
+            Time:
+            <select class="timeframe">
+              <option value="1">1m</option>
+              <option value="5" selected>5m</option>
+              <option value="15">15m</option>
+              <option value="60">1h</option>
+              <option value="240">4h</option>
+              <option value="D">1d</option>
+            </select>
+          </label>
+        </div>
+        <div class="tvchart"></div>
+        <button class="fullscreen-btn" title="Toggle Fullscreen">⛶</button>
+      </div>
+    </div>
+
+    <script src="https://s3.tradingview.com/tv.js"></script>
+    <script>
+      function debounce(func, wait) {
+        let timeout;
+        return function (...args) {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+      }
+
+      const charts = [];
+
+      function createChart(containerId, symbol, interval) {
+        return new TradingView.widget({
+          autosize: true,
+          symbol: symbol,
+          interval: interval,
+          timezone: "Etc/UTC",
+          theme: "dark",
+          style: "1",
+          locale: "en",
+          toolbar_bg: "#000000",
+          enable_publishing: false,
+          hide_top_toolbar: false,
+          hide_side_toolbar: false,
+          hide_volume: true,
+          container_id: containerId,
+          withdateranges: false,
+          allow_symbol_change: false,
+          save_image: false,
+          overrides: {
+            volumePaneSize: "small",
+          },
+        });
+      }
+
+      document
+        .querySelectorAll(".chart-container")
+        .forEach((container, index) => {
+          const tvDiv = container.querySelector(".tvchart");
+          const symbol = container.getAttribute("data-symbol");
+          const select = container.querySelector(".timeframe");
+          const containerId = `tv${index}`;
+          tvDiv.id = containerId;
+
+          charts[index] = createChart(containerId, symbol, select.value);
+
+          const onTimeChange = debounce(() => {
+            container.classList.add("fade-out");
+
+            setTimeout(() => {
+              tvDiv.innerHTML = "";
+              charts[index] = createChart(containerId, symbol, select.value);
+              container.classList.remove("fade-out");
+            }, 300);
+          }, 300);
+
+          select.addEventListener("change", (e) => {
+            e.stopPropagation();
+            onTimeChange();
+          });
+
+          const fullscreenBtn = container.querySelector(".fullscreen-btn");
+          fullscreenBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            container.classList.toggle("fullscreen");
+            document.body.classList.toggle(
+              "no-scroll",
+              container.classList.contains("fullscreen")
+            );
+          });
+        });
+    </script>
+  </body>
+</html>
